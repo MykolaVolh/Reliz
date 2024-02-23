@@ -1,11 +1,6 @@
 from pygame import * 
 
-#ігрова сцена:
-back = (200, 255, 255)  #колір фону (background)
-win_width = 600
-win_height = 500
-window = display.set_mode((win_width, win_height))
-window.fill(back)
+#Зображення
 
 #створення гравців (список)  
 firstplayer = ['player.png' ,'player1.png' ,'player2.png' ,'player3.png', 'player4.png', 'player5.png', 'player6.png', 'player7.png', 'player8.png', 'player9.png']
@@ -46,3 +41,58 @@ win_width = 600
 win_height = 500
 window = display.set_mode((win_width, win_height))
 window.fill(back)
+player = 'player.png'
+player2 = 'another'
+colona = 'colona.png'
+
+player1 = ('player.png', 50, 200, 50, 50, 5)
+colona = ("bullet.png", 15, 20, -15 ) 
+player2 = ('anotherplayer1.png', 500, 200, 50, 50, 5)
+
+firstplayer = [Player('player.png',0, 200, 50, 50, 5),Player('player1.png',0, 200, 50, 50, 5),Player('player2.png',0, 200, 50, 50, 5),Player('player3.png',0, 200, 50, 50, 5),Player('player4.png',0, 200, 50, 50, 5),Player('player5.png',0, 200, 50, 50, 5),Player('player6.png',0, 200, 50, 50, 5),Player('player7.png',0, 200, 50, 50, 5)]
+
+secondplayer = [Player('anotherplayer1',0, 200, 50, 50, 5),Player('anotherplayer2',0, 200, 50, 50, 5),Player('anotherplayer3',0, 200, 50, 50, 5),Player('anotherplayer4',0, 200, 50, 50, 5),Player('anotherplayer5',0, 200, 50, 50, 5),Player('anotherplayer6',0, 200, 50, 50, 5),Player('anotherplayer7',0, 200, 50, 50, 5),Player('anotherplayer8',0, 200, 50, 50, 5),Player('anotherplayer9',0, 200, 50, 50, 5)]
+# Ініціалізація Pygame
+init()
+
+# Створення вікна
+back = (200, 255, 255)
+win_width = 600
+win_height = 500
+window = display.set_mode((win_width, win_height))
+display.set_caption("Гра")
+anim_f=0
+# Основний цикл гри
+running = True
+while running:
+    for e in event.get():
+        if e.type == QUIT:
+            running = False
+
+    # Оновлення екрану
+    window.fill(back)
+
+    # Отримання введення користувача
+    keys = key.get_pressed()
+
+    # Оновлення стану гравця
+    if keys[K_UP]:
+        # Оновлення гравця вгору
+        pass  # Додайте код для оновлення гравця вгору
+    elif keys[K_DOWN]:
+        # Оновлення гравця вниз
+        pass  # Додайте код для оновлення гравця вниз
+    secondplayer[anim_f].draw()
+    # Відображення екрану
+    display.update()
+
+
+
+# Відображення гравців
+player1.reset()
+player2.reset()
+
+# Відображення екрану
+display.update()
+# Завершення Pygame
+quit()
