@@ -3,9 +3,27 @@ from pygame import *
 #Зображення
 
 #створення гравців (список)  
-firstplayer = ['player.png' ,'player1.png' ,'player2.png' ,'player3.png', 'player4.png', 'player5.png', 'player6.png', 'player7.png', 'player8.png', 'player9.png']
+firstplayer = [
+    transform.scale(image.load('player.png'), (50, 50)),
+    transform.scale(image.load('player1.png'), (50, 50)),
+    transform.scale(image.load('player2.png'), (50, 50)),
+    transform.scale(image.load('player3.png'), (50, 50)),
+    transform.scale(image.load('player4.png'), (50, 50)),
+    transform.scale(image.load('player5.png'), (50, 50)),
+    transform.scale(image.load('player6.png'), (50, 50)),
+    transform.scale(image.load('player7.png'), (50, 50)),
+    transform.scale(image.load('player8.png'), (50, 50)),
+    transform.scale(image.load('player9.png'), (50, 50))]
 
-secondplayer = ['anotherplayer1', 'anotherplayer2', 'anotherplayer3', 'anotherplayer4', 'anotherplayer5', 'anotherplayer6', 'anotherplayer7', 'anotherplayer8', 'anotherplayer9']
+secondplayer = [image.load('anotherplayer1.png'), 
+                image.load('anotherplayer2.png'), 
+                image.load('anotherplayer3.png'), 
+                image.load('anotherplayer4.png'), 
+                image.load('anotherplayer5.png'), 
+                image.load('anotherplayer6.png'), 
+                image.load('anotherplayer7.png'), 
+                image.load('anotherplayer8.png'), 
+                image.load('anotherplayer9.png')]
 
 class GameSprite(sprite.Sprite):
     def __init__(self, player_image, player_x, player_y, size_x, size_y, player_speed):
@@ -16,24 +34,45 @@ class GameSprite(sprite.Sprite):
         self.rect.x = player_x
         self.rect.y = player_y
 
-    def reset (self):
+    def reset(self):
         window.blit(self.image, (self.rect.x, self.rect.y))
 
 
-
 class Player(GameSprite):
-    def update_r(self):
+    def update(self):
         keys = key.get_pressed()
-        if keys[K_UP] and self.rect.y > 5:
-            self.rect.y -= self.speed
-        if keys[K_DOWN] and self.rect.y < win_height - 80:
-            self.rect.y += self.speed
+        if keys[K_LEFT] :
+            self.rect.x -= self.speed
+            self.right = True
+
+        elif keys[K_RIGHT] :
+            self.right = True
+            self.rect.x += self.speed
+        else:
+            self.right = self.left = False
+            
     def update_l(self):
-        keys = key.get_pressed()
-        if keys[K_w] and self.rect.y > 5:
-            self.rect.y -= self.speed
-        if keys[K_s] and self.rect.y < win_height - 80:
-            self.rect.y += self.speed
+            keys = key.get_pressed()
+            if keys[K_w] and self.rect.y > 5:
+                self.rect.y -= self.speed
+                self.left= True
+            if keys[K_s] and self.rect.y < win_height - 80:
+                self.left= True
+                self.rect.y += self.speed
+            else:
+                self.right = self.left = False
+
+    def animation(self):
+        if self.left:
+            self.count = (self.count + 1) % len(secondplayer)  
+            window.blit(secondplayer[self.count], (self.rect.x, self.rect.y))
+        elif self.right:
+            self.count = (self.count + 1) % len(firstplayer)  
+            window.blit(firstplayer[self.count], (self.rect.x, self.rect.y))
+        else:
+            self.count=0
+            window.blit(secondplayer[self.count], (self.rect.x, self.rect.y))
+
 
 #ігрова сцена:
 back = (200, 255, 255)  #колір фону (background)
@@ -45,13 +84,13 @@ player = 'player.png'
 player2 = 'another'
 colona = 'colona.png'
 
-player1 = ('player.png', 50, 200, 50, 50, 5)
-colona = ("bullet.png", 15, 20, -15 ) 
-player2 = ('anotherplayer1.png', 500, 200, 50, 50, 5)
+player1 = Player('player.png', 20, 200, 2, 2, 5)
+colona = ("colona.jpg", 15, 20, -15 ) 
+player2 = Player('anotherplayer1.png', 500, 200, 50, 50, 5)
 
-firstplayer = [Player('player.png',0, 200, 50, 50, 5),Player('player1.png',0, 200, 50, 50, 5),Player('player2.png',0, 200, 50, 50, 5),Player('player3.png',0, 200, 50, 50, 5),Player('player4.png',0, 200, 50, 50, 5),Player('player5.png',0, 200, 50, 50, 5),Player('player6.png',0, 200, 50, 50, 5),Player('player7.png',0, 200, 50, 50, 5)]
+#firstplayer = [Player('player.png',0, 200, 50, 50, 5),Player('player1.png',0, 200, 50, 50, 5),Player('player2.png',0, 200, 50, 50, 5),Player('player3.png',0, 200, 50, 50, 5),Player('player4.png',0, 200, 50, 50, 5),Player('player5.png',0, 200, 50, 50, 5),Player('player6.png',0, 200, 50, 50, 5),Player('player7.png',0, 200, 50, 50, 5)]
 
-secondplayer = [Player('anotherplayer1',0, 200, 50, 50, 5),Player('anotherplayer2',0, 200, 50, 50, 5),Player('anotherplayer3',0, 200, 50, 50, 5),Player('anotherplayer4',0, 200, 50, 50, 5),Player('anotherplayer5',0, 200, 50, 50, 5),Player('anotherplayer6',0, 200, 50, 50, 5),Player('anotherplayer7',0, 200, 50, 50, 5),Player('anotherplayer8',0, 200, 50, 50, 5),Player('anotherplayer9',0, 200, 50, 50, 5)]
+#secondplayer = [Player('anotherplayer1',0, 200, 50, 50, 5),Player('anotherplayer2',0, 200, 50, 50, 5),Player('anotherplayer3',0, 200, 50, 50, 5),Player('anotherplayer4',0, 200, 50, 50, 5),Player('anotherplayer5',0, 200, 50, 50, 5),Player('anotherplayer6',0, 200, 50, 50, 5),Player('anotherplayer7',0, 200, 50, 50, 5),Player('anotherplayer8',0, 200, 50, 50, 5),Player('anotherplayer9',0, 200, 50, 50, 5)]
 # Ініціалізація Pygame
 init()
 
@@ -71,28 +110,19 @@ while running:
 
     # Оновлення екрану
     window.fill(back)
-
     # Отримання введення користувача
     keys = key.get_pressed()
 
-    # Оновлення стану гравця
-    if keys[K_UP]:
-        # Оновлення гравця вгору
-        pass  # Додайте код для оновлення гравця вгору
-    elif keys[K_DOWN]:
-        # Оновлення гравця вниз
-        pass  # Додайте код для оновлення гравця вниз
-    secondplayer[anim_f].draw()
+    player1.reset()
+    player1.update()
+    player1.animation()
+
+    player2.reset()
+    player2.update_l()
+    player2.animation()
+
+    
+
     # Відображення екрану
     display.update()
-
-
-
-# Відображення гравців
-player1.reset()
-player2.reset()
-
-# Відображення екрану
-display.update()
-# Завершення Pygame
-quit()
+    time.delay(50)
