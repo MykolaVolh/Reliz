@@ -1,128 +1,130 @@
-from pygame import * 
+import pygame
+from pygame.locals import *
+import sys
+import random
 
-#Зображення
+# Initialize pygame
+pygame.init()
 
-#створення гравців (список)  
-firstplayer = [
-    transform.scale(image.load('player.png'), (50, 50)),
-    transform.scale(image.load('player1.png'), (50, 50)),
-    transform.scale(image.load('player2.png'), (50, 50)),
-    transform.scale(image.load('player3.png'), (50, 50)),
-    transform.scale(image.load('player4.png'), (50, 50)),
-    transform.scale(image.load('player5.png'), (50, 50)),
-    transform.scale(image.load('player6.png'), (50, 50)),
-    transform.scale(image.load('player7.png'), (50, 50)),
-    transform.scale(image.load('player8.png'), (50, 50)),
-    transform.scale(image.load('player9.png'), (50, 50))]
+# Set up the window
+back = (200, 255, 255)
+win_width = 600
+win_height = 500
+window = pygame.display.set_mode((win_width, win_height))
+pygame.display.set_caption("Racing Game")
 
-secondplayer = [image.load('anotherplayer1.png'), 
-                image.load('anotherplayer2.png'), 
-                image.load('anotherplayer3.png'), 
-                image.load('anotherplayer4.png'), 
-                image.load('anotherplayer5.png'), 
-                image.load('anotherplayer6.png'), 
-                image.load('anotherplayer7.png'), 
-                image.load('anotherplayer8.png'), 
-                image.load('anotherplayer9.png')]
+# Load player images
+player1_images = [pygame.transform.scale(pygame.image.load('player1.png'), (50, 50)),
+                  pygame.transform.scale(pygame.image.load('player2.png'), (50, 50)),
+                  pygame.transform.scale(pygame.image.load('player3.png'), (50, 50)),
+                  pygame.transform.scale(pygame.image.load('player4.png'), (50, 50)),
+                  pygame.transform.scale(pygame.image.load('player5.png'), (50, 50))]
 
-class GameSprite(sprite.Sprite):
-    def __init__(self, player_image, player_x, player_y, size_x, size_y, player_speed):
-        sprite.Sprite.__init__(self)
-        self.image = transform.scale(image.load(player_image), (size_x, size_y))
-        self.speed = player_speed
+player2_images = [pygame.transform.scale(pygame.image.load('anotherplayer1.png'), (50, 50)),
+                  pygame.transform.scale(pygame.image.load('anotherplayer2.png'), (50, 50)),
+                  pygame.transform.scale(pygame.image.load('anotherplayer3.png'), (50, 50)),
+                  pygame.transform.scale(pygame.image.load('anotherplayer4.png'), (50, 50)),
+                  pygame.transform.scale(pygame.image.load('anotherplayer5.png'), (50, 50))]
+
+# Define the GameSprite class
+class GameSprite(pygame.sprite.Sprite):
+    def __init__(self, image, x, y, size_x, size_y, speed):
+        super().__init__()
+        self.image = image
         self.rect = self.image.get_rect()
-        self.rect.x = player_x
-        self.rect.y = player_y
+        self.rect.x = x
+        self.rect.y = y
+        self.speed = speed
 
     def reset(self):
         window.blit(self.image, (self.rect.x, self.rect.y))
 
-
-class Player(GameSprite):
     def update(self):
-        keys = key.get_pressed()
-        if keys[K_LEFT] :
-            self.rect.x -= self.speed
-            self.right = True
+        self.rect.x -= self.speed
+        if self.rect.right < 0:
+            self.rect.x = win_width + 20
+            self.rect.y = random.randint(50, win_height - 50)
 
-        elif keys[K_RIGHT] :
-            self.right = True
-            self.rect.x += self.speed
-        else:
-            self.right = self.left = False
-            
-    def update_l(self):
-            keys = key.get_pressed()
-            if keys[K_w] and self.rect.y > 5:
-                self.rect.y -= self.speed
-                self.left= True
-            if keys[K_s] and self.rect.y < win_height - 80:
-                self.left= True
-                self.rect.y += self.speed
-            else:
-                self.right = self.left = False
+# Define the Player class
+class Player(GameSprite):
+    def __init__(self, images, *args, **kwargs):
+        super().__init__(images[0], *args, **kwargs)
+        self.images = images
+        self.frame = 0
+
+    def update(self):
+        keys = pygame.key.get_pressed()
+        if keys[K_UP]:
+            self.rect.y -= self.speed
+        elif keys[K_DOWN]:
+            self.rect.y += self.speed
 
     def animation(self):
-        if self.left:
-            self.count = (self.count + 1) % len(secondplayer)  
-            window.blit(secondplayer[self.count], (self.rect.x, self.rect.y))
-        elif self.right:
-            self.count = (self.count + 1) % len(firstplayer)  
-            window.blit(firstplayer[self.count], (self.rect.x, self.rect.y))
-        else:
-            self.count=0
-            window.blit(secondplayer[self.count], (self.rect.x, self.rect.y))
+        self.frame += 1
+        if self.frame >= len(self.images):
+            self.frame = 0
+        self.image = self.images[self.frame]
 
+# Define the Obstacle class
+class Obstacle(GameSprite):
+    def __init__(self, x, y, width, height, speed):
+        super().__init__(pygame.Surface((width, height)), x, y, width, height, speed)
+        self.image.fill((255, 0, 0))  # Red color for the obstacle
 
-#ігрова сцена:
-back = (200, 255, 255)  #колір фону (background)
-win_width = 600
-win_height = 500
-window = display.set_mode((win_width, win_height))
-window.fill(back)
-player = 'player.png'
-player2 = 'another'
-colona = 'colona.png'
+# Create player objects
+player1 = Player(player1_images, 20, 200, 50, 50, 5)
+player2 = Player(player2_images, 20, 300, 50, 50, 5)
 
-player1 = Player('player.png', 20, 200, 2, 2, 5)
-colona = ("colona.jpg", 15, 20, -15 ) 
-player2 = Player('anotherplayer1.png', 500, 200, 50, 50, 5)
+# Create obstacle objects
+obstacles = pygame.sprite.Group()
+for _ in range(5):
+    obstacle = Obstacle(random.randint(200, win_width - 100), random.randint(50, win_height - 50), 30, 30, 3)
+    obstacles.add(obstacle)
 
-#firstplayer = [Player('player.png',0, 200, 50, 50, 5),Player('player1.png',0, 200, 50, 50, 5),Player('player2.png',0, 200, 50, 50, 5),Player('player3.png',0, 200, 50, 50, 5),Player('player4.png',0, 200, 50, 50, 5),Player('player5.png',0, 200, 50, 50, 5),Player('player6.png',0, 200, 50, 50, 5),Player('player7.png',0, 200, 50, 50, 5)]
-
-#secondplayer = [Player('anotherplayer1',0, 200, 50, 50, 5),Player('anotherplayer2',0, 200, 50, 50, 5),Player('anotherplayer3',0, 200, 50, 50, 5),Player('anotherplayer4',0, 200, 50, 50, 5),Player('anotherplayer5',0, 200, 50, 50, 5),Player('anotherplayer6',0, 200, 50, 50, 5),Player('anotherplayer7',0, 200, 50, 50, 5),Player('anotherplayer8',0, 200, 50, 50, 5),Player('anotherplayer9',0, 200, 50, 50, 5)]
-# Ініціалізація Pygame
-init()
-
-# Створення вікна
-back = (200, 255, 255)
-win_width = 600
-win_height = 500
-window = display.set_mode((win_width, win_height))
-display.set_caption("Гра")
-anim_f=0
-# Основний цикл гри
+# Main game loop
+clock = pygame.time.Clock()
 running = True
 while running:
-    for e in event.get():
-        if e.type == QUIT:
+    for event in pygame.event.get():
+        if event.type == QUIT:
             running = False
 
-    # Оновлення екрану
-    window.fill(back)
-    # Отримання введення користувача
-    keys = key.get_pressed()
-
-    player1.reset()
+    # Handle player updates and animations
     player1.update()
     player1.animation()
-
-    player2.reset()
-    player2.update_l()
+    player2.update()
     player2.animation()
 
-    
+    # Update obstacles
+    obstacles.update()
 
-    # Відображення екрану
-    display.update()
-    time.delay(50)
+    # Check for collisions with obstacles
+    collisions = pygame.sprite.spritecollideany(player1, obstacles) or pygame.sprite.spritecollideany(player2, obstacles)
+    if collisions:
+        running = False
+
+    # Clear the screen
+    window.fill(back)
+
+    # Draw players and obstacles
+    player1.reset()
+    player2.reset()
+    obstacles.draw(window)
+
+    # Update the display
+    pygame.display.update()
+
+    # Cap the frame rate
+    clock.tick(60)
+
+# Game over
+font = pygame.font.Font(None, 36)
+game_over_text = font.render("Game Over", True, (255, 0, 0))
+window.blit(game_over_text, (win_width // 2 - 100, win_height // 2))
+pygame.display.update()
+
+# Wait for a moment before quitting
+pygame.time.delay(2000)
+
+pygame.quit()
+sys.exit()
